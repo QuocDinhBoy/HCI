@@ -4,28 +4,23 @@ export const getUserProfile = async (req, res) => {
     try {
         const userId = req.user.id; 
 
-        const [userRows] = await db.query(
-            `SELECT username, email, parent_name, avatar FROM user WHERE id = ?`, 
-            [userId]
-        );
+        // Tối ưu hóa: Chạy các truy vấn đồng thời thay vì tuần tự
+        const [
+            [userRows],
+            [scoreRow],
+            [dateRows]
+        ] = await Promise.all([
+            db.query(`SELECT username, email, parent_name, avatar FROM user WHERE id = ?`, [userId]),
+            db.query(`SELECT SUM(score) as total_score FROM user_activity_log WHERE user_id = ?`, [userId]),
+            db.query(`SELECT DISTINCT DATE(answered_at) as play_date FROM user_activity_log WHERE user_id = ? ORDER BY play_date DESC`, [userId])
+        ]);
 
         if (userRows.length === 0) {
             return res.status(404).json({ message: "Không tìm thấy người dùng" });
         }
         const user = userRows[0];
 
-        const [scoreRow] = await db.query(
-            `SELECT SUM(score) as total_score FROM user_activity_log WHERE user_id = ?`, 
-            [userId]
-        );
-        const totalStars = scoreRow[0].total_score || 0;
-
-        const [dateRows] = await db.query(`
-            SELECT DISTINCT DATE(answered_at) as play_date 
-            FROM user_activity_log 
-            WHERE user_id = ? 
-            ORDER BY play_date DESC
-        `, [userId]);
+        const totalStars = scoreRow[0]?.total_score || 0;
 
         let streak = 0;
         if (dateRows.length > 0) {
