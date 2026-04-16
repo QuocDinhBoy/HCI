@@ -1,50 +1,53 @@
+/* ─── Button Component ─────────────────────────────────────
+   Sử dụng class-based thay inline style để dễ override
+───────────────────────────────────────────────────────────── */
+
+const PALETTE = {
+  primary: 'btn-primary',
+  success: 'btn-success',
+  warm:    'btn-warm',
+  purple:  'btn-purple',
+  ghost:   'btn-ghost',
+  danger:  'btn-danger',
+};
+
+const SIZES = {
+  sm:  'btn-sm',
+  md:  '',
+  lg:  'btn-lg',
+  xl:  'btn-xl',
+  kid: 'btn-kid',
+};
+
 export default function Button({
   children,
-  type = 'button',
-  variant = 'primary',
-  full = false,
+  type     = 'button',
+  variant  = 'primary',
+  size     = 'md',
+  full     = false,
   disabled = false,
   onClick,
+  style,
+  className = '',
+  id,
 }) {
-  const palette = {
-    primary: {
-      bg: 'linear-gradient(120deg,#17a2a2,#0f8f8f)',
-      color: '#fff',
-      border: 'none',
-    },
-    ghost: {
-      bg: '#ffffff',
-      color: '#2d5f77',
-      border: '1px solid #cde2ee',
-    },
-    danger: {
-      bg: '#ffe6e0',
-      color: '#bc4a36',
-      border: '1px solid #ffd0c8',
-    },
-    warm: {
-      bg: 'linear-gradient(120deg,#f9b233,#ff7f6a)',
-      color: '#fff',
-      border: 'none',
-    },
-  }[variant];
+  const variantClass = PALETTE[variant] || 'btn-primary';
+  const sizeClass    = SIZES[size]    || '';
 
   return (
     <button
+      id={id}
       type={type}
       disabled={disabled}
       onClick={onClick}
-      style={{
-        width: full ? '100%' : 'auto',
-        borderRadius: 14,
-        padding: '10px 16px',
-        fontWeight: 800,
-        letterSpacing: 0.3,
-        cursor: disabled ? 'not-allowed' : 'pointer',
-        opacity: disabled ? 0.6 : 1,
-        transition: 'transform .15s ease, filter .2s ease',
-        ...palette,
-      }}
+      style={style}
+      className={[
+        'btn',
+        variantClass,
+        sizeClass,
+        full ? 'btn-full' : '',
+        className,
+      ].filter(Boolean).join(' ')}
     >
       {children}
     </button>

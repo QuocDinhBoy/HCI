@@ -7,7 +7,7 @@ import userRoutes from './routers/user.js';
 import flashcardRoutes from './routers/flashcard.js';
 import matchingRoutes from './routers/matching.js';
 import contextRoutes from './routers/context.js';
-import emotionTrainingRoutes from './routers/emotionTraining.js'; 
+import emotionTrainingRoutes from './routers/emotionTraining.js';
 import aiRoutes from './routers/ai.js';
 import progressRoutes from './routers/progress.js';
 import reportRoutes from './routers/report.js';
@@ -25,11 +25,11 @@ const PORT = process.env.PORT || 3000;
 
 // CORS — chỉ cho phép frontend
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: process.env.FRONTEND_URL || 'http://localhost:5175',
     credentials: true
 }));
 
-app.use(express.json({ limit: '50mb' })); 
+app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Request logging (dev mode)
@@ -48,7 +48,7 @@ app.use('/api/flashcard', flashcardRoutes);
 app.use('/api/matching', matchingRoutes);
 app.use('/api/context', contextRoutes);
 app.use('/api/emotion-training', emotionTrainingRoutes);
-app.use('/api/ai', aiRoutes); 
+app.use('/api/ai', aiRoutes);
 app.use('/api/report', reportRoutes);
 app.use('/api/gemini', geminiRoutes);
 app.use('/api/emotion-sessions', emotionSessionRoutes);
@@ -57,8 +57,8 @@ app.use('/api/recommendations', recommendationRoutes);
 app.use('/api/tts', ttsRoutes);
 
 app.get('/', (req, res) => {
-    res.json({ 
-        success: true, 
+    res.json({
+        success: true,
         message: 'EmpathyKids API is running',
         version: '2.0'
     });

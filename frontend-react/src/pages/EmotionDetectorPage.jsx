@@ -320,7 +320,7 @@ export default function EmotionDetectorPage({ practiceMode = false }) {
       </Card>
 
       {error ? (
-        <p style={{ color: '#bc4a36', fontWeight: 800, background: '#ffe8e3', borderRadius: 12, padding: '8px 10px' }}>{error}</p>
+        <div className="alert alert-error">{error}</div>
       ) : null}
 
       <div style={{ display: 'grid', gap: 14, gridTemplateColumns: '1.2fr .8fr' }}>
@@ -338,73 +338,49 @@ export default function EmotionDetectorPage({ practiceMode = false }) {
             <>
               {practiceMode ? (
                 <>
-                  <div
-                    style={{
-                      position: 'absolute',
-                      left: 10,
-                      top: 10,
-                      background: 'rgba(255,255,255,.94)',
-                      borderRadius: 12,
-                      padding: '7px 10px',
-                      fontWeight: 900,
-                      color: '#2b5e75',
-                    }}
-                  >
-                    Mục tiêu: {getEmotionLabel(targetEmotion)}
+                  <div style={{
+                    position: 'absolute', left: 10, top: 10,
+                    background: 'rgba(255,255,255,.94)', borderRadius: 12,
+                    padding: '7px 12px', fontWeight: 900, color: 'var(--ink-700)',
+                    boxShadow: 'var(--shadow-sm)',
+                  }}>
+                    🎯 Mục tiêu: {getEmotionLabel(targetEmotion)}
                   </div>
-                  <div
-                    style={{
-                      position: 'absolute',
-                      right: 10,
-                      top: 10,
-                      background: 'rgba(23,162,162,.92)',
-                      borderRadius: 999,
-                      padding: '6px 12px',
-                      fontWeight: 900,
-                      color: '#fff',
-                    }}
-                  >
-                    {practiceSecondsLeft}s
+                  <div style={{
+                    position: 'absolute', right: 10, top: 10,
+                    background: 'rgba(45,143,212,.92)', borderRadius: 999,
+                    padding: '6px 14px', fontWeight: 900, color: '#fff',
+                    boxShadow: 'var(--shadow-sm)',
+                  }}>
+                    ⏱ {practiceSecondsLeft}s
                   </div>
-                  <div
-                    style={{
-                      position: 'absolute',
-                      right: 10,
-                      bottom: 10,
-                      background: 'rgba(255,255,255,.92)',
-                      borderRadius: 999,
-                      padding: '6px 10px',
-                      fontWeight: 900,
-                      color: '#2b5e75',
-                    }}
-                  >
-                    Match: {targetMatchScore}%
+                  <div style={{
+                    position: 'absolute', right: 10, bottom: 10,
+                    background: targetMatchScore >= 60 ? 'rgba(66,181,120,.92)' : 'rgba(255,255,255,.92)',
+                    color: targetMatchScore >= 60 ? 'white' : 'var(--ink-700)',
+                    borderRadius: 999, padding: '6px 14px',
+                    fontWeight: 900, boxShadow: 'var(--shadow-sm)',
+                  }}>
+                    {targetMatchScore >= 60 ? '✅ ' : ''}Khớp: {targetMatchScore}%
                   </div>
                 </>
               ) : (
-                <div
-                  style={{
-                    position: 'absolute',
-                    right: 10,
-                    bottom: 10,
-                    background: 'rgba(255,255,255,.92)',
-                    borderRadius: 999,
-                    padding: '6px 10px',
-                    fontWeight: 800,
-                    color: '#2b5e75',
-                  }}
-                >
-                  {faceDetected ? `${getEmotionLabel(dominantEmotion)} ${confidence}%` : 'Chưa thấy khuôn mặt'}
+                <div style={{
+                  position: 'absolute', right: 10, bottom: 10,
+                  background: 'rgba(255,255,255,.92)', borderRadius: 999,
+                  padding: '6px 14px', fontWeight: 800, color: 'var(--ink-700)',
+                  boxShadow: 'var(--shadow-sm)',
+                }}>
+                  {faceDetected ? `${getEmotionLabel(dominantEmotion)} ${confidence}%` : '🔍 Chưa thấy khuôn mặt'}
                 </div>
               )}
             </>
           ) : null}
         </CameraView>
 
-        <div style={{ display: 'grid', gap: 10, alignContent: 'start' }}>
+        <div style={{ display: 'grid', gap: 12, alignContent: 'start' }}>
           <EmotionBars emotions={emotions} dominantEmotion={dominantEmotion} />
 
-          {/* Music Player - chỉ hiển thị ở realtime mode */}
           {!practiceMode && (
             <MusicPlayer
               isPlaying={musicPlaying}
@@ -423,76 +399,81 @@ export default function EmotionDetectorPage({ practiceMode = false }) {
 
           {practiceMode ? (
             <>
-              <Card style={{ background: 'linear-gradient(130deg,#fff4e7,#fff)' }}>
-                <h3 style={{ fontSize: 22 }}>Luyện biểu cảm nhanh</h3>
-                <p style={{ marginTop: 6, color: '#4f758a', lineHeight: 1.5 }}>
-                  Cứ mỗi 10 giây hệ thống đổi mục tiêu. Con hãy bắt chước thật nhanh để tăng điểm.
+              <Card variant="peach" style={{ padding: 20 }}>
+                <h3 style={{ fontSize: '1.2rem' }}>🎯 Luyện biểu cảm nhanh</h3>
+                <p style={{ marginTop: 8, color: 'var(--ink-500)', lineHeight: 1.6, fontSize: '0.95rem' }}>
+                  Cứ mỗi 10 giây hệ thống đổi mục tiêu. Con hãy bắt chước thật nhanh để tăng điểm!
                 </p>
 
-                <div style={{ marginTop: 10, display: 'grid', gap: 8 }}>
-                  <div className="pill" style={{ background: '#e8f3ff', color: '#2d6ec5' }}>
-                    Mục tiêu hiện tại: {getEmotionLabel(targetEmotion)}
+                <div style={{ marginTop: 12, display: 'grid', gap: 8 }}>
+                  <span className="pill pill-lavender">
+                    🎭 Mục tiêu: {getEmotionLabel(targetEmotion)}
+                  </span>
+                  <div className="progress-track">
+                    <div className="progress-fill" style={{
+                      width: `${((PRACTICE_SECONDS - practiceSecondsLeft) / PRACTICE_SECONDS) * 100}%`,
+                      background: 'linear-gradient(90deg, var(--peach-300), var(--coral-400))',
+                    }} />
                   </div>
-                  <div style={{ height: 8, background: '#edf4f8', borderRadius: 999 }}>
-                    <div
-                      style={{
-                        height: '100%',
-                        width: `${((PRACTICE_SECONDS - practiceSecondsLeft) / PRACTICE_SECONDS) * 100}%`,
-                        borderRadius: 999,
-                        background: 'linear-gradient(120deg,#ff7f6a,#f9b233)',
-                        transition: 'width .35s ease',
-                      }}
-                    />
-                  </div>
-                  <p style={{ color: '#2e5e76', fontWeight: 800 }}>Còn lại: {practiceSecondsLeft}s</p>
+                  <p style={{ color: 'var(--ink-600)', fontWeight: 800, fontSize: '0.9rem' }}>
+                    ⏱ Còn lại: {practiceSecondsLeft}s
+                  </p>
                 </div>
 
-                <div style={{ marginTop: 10 }}>
-                  <Button variant="warm" onClick={skipPracticeTarget} disabled={!cameraActive}>
-                    Đổi cảm xúc ngay
+                <div style={{ marginTop: 12 }}>
+                  <Button variant="warm" size="sm" onClick={skipPracticeTarget} disabled={!cameraActive}>
+                    🔀 Đổi cảm xúc ngay
                   </Button>
                 </div>
               </Card>
 
-              <Card>
-                <h3 style={{ fontSize: 22 }}>Bảng điểm nhanh</h3>
-                <p style={{ color: '#4f758a', marginTop: 6 }}>Vòng đã chơi: {practiceRounds}</p>
-                <p style={{ color: '#4f758a', marginTop: 4 }}>Tổng điểm: {practiceScore}</p>
-                <p style={{ color: '#4f758a', marginTop: 4 }}>Combo liên tiếp: x{combo}</p>
-                <p style={{ color: '#4f758a', marginTop: 4 }}>Vòng tốt nhất: {practiceBest}%</p>
+              <Card style={{ padding: 20, background: 'linear-gradient(135deg, var(--sun-50), white)' }}>
+                <h3 style={{ fontSize: '1.2rem' }}>🏆 Bảng điểm</h3>
+                <div style={{ display: 'grid', gap: 8, marginTop: 10 }}>
+                  {[
+                    { icon: '🎮', label: 'Vòng đã chơi', value: practiceRounds },
+                    { icon: '⭐', label: 'Tổng điểm',   value: practiceScore },
+                    { icon: '🔥', label: 'Combo',        value: `x${combo}` },
+                    { icon: '🥇', label: 'Vòng tốt nhất', value: `${practiceBest}%` },
+                  ].map((stat) => (
+                    <div key={stat.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 10px', background: 'white', borderRadius: 10, border: '1px solid rgba(126,197,248,0.15)' }}>
+                      <span style={{ color: 'var(--ink-500)', fontWeight: 700, fontSize: '0.9rem' }}>
+                        {stat.icon} {stat.label}
+                      </span>
+                      <span style={{ fontWeight: 900, color: 'var(--ink-800)', fontSize: '1rem' }}>{stat.value}</span>
+                    </div>
+                  ))}
+                </div>
 
-                {lastRoundAvg !== null ? (
-                  <div
-                    style={{
-                      marginTop: 10,
-                      fontWeight: 900,
-                      color: lastRoundPassed ? '#2f8b53' : '#bc4a36',
-                      background: lastRoundPassed ? '#e6fbef' : '#ffe9e4',
-                      borderRadius: 10,
-                      padding: '6px 10px',
-                    }}
-                  >
-                    Vòng trước: {lastRoundAvg}% {lastRoundPassed ? '— Đạt yêu cầu' : '— Thử thêm nhé'}
+                {lastRoundAvg !== null && (
+                  <div className={`alert ${lastRoundPassed ? 'alert-success' : 'alert-warning'}`} style={{ marginTop: 10 }}>
+                    {lastRoundPassed ? '🎉' : '💪'} Vòng trước: {lastRoundAvg}% — {lastRoundPassed ? 'Đạt yêu cầu!' : 'Thử thêm nhé!'}
                   </div>
-                ) : null}
+                )}
               </Card>
             </>
           ) : (
             <>
-              <Card style={{ background: 'linear-gradient(130deg,#fff4e7,#fff)' }}>
-                <h3 style={{ fontSize: 22 }}>Gợi ý hiện tại</h3>
-                <p style={{ marginTop: 6, color: '#4f758a', lineHeight: 1.5 }}>{suggestion}</p>
+              <Card variant="sun" style={{ padding: 20 }}>
+                <h3 style={{ fontSize: '1.2rem' }}>💡 Gợi ý cho con</h3>
+                <p style={{ marginTop: 8, color: 'var(--ink-500)', lineHeight: 1.6, fontSize: '0.95rem' }}>{suggestion}</p>
               </Card>
 
-              <Card>
-                <h3 style={{ fontSize: 22 }}>Phiên theo dõi</h3>
-                <p style={{ color: '#4f758a', marginTop: 6 }}>Trạng thái: {cameraActive ? 'Đang ghi nhận' : 'Đã dừng'}</p>
-                <p style={{ color: '#4f758a', marginTop: 4 }}>ID: {sessionId || '--'}</p>
-                {sessionSummary ? (
-                  <div style={{ marginTop: 8, fontWeight: 800, color: '#2f8b53' }}>
-                    Tổng kết: {getEmotionLabel(sessionSummary.dominantEmotion)} - {sessionSummary.avgConfidence}%
+              <Card style={{ padding: 20 }}>
+                <h3 style={{ fontSize: '1.2rem' }}>📡 Phiên theo dõi</h3>
+                <div style={{ marginTop: 10, display: 'grid', gap: 8 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: 'var(--ink-500)', fontWeight: 700 }}>Trạng thái</span>
+                    <span className={`pill ${cameraActive ? 'pill-mint' : 'pill-locked'}`}>
+                      {cameraActive ? '🟢 Đang ghi nhận' : '⚫ Đã dừng'}
+                    </span>
                   </div>
-                ) : null}
+                  {sessionSummary && (
+                    <div className="alert alert-success">
+                      🏁 Tổng kết: {getEmotionLabel(sessionSummary.dominantEmotion)} — {sessionSummary.avgConfidence}%
+                    </div>
+                  )}
+                </div>
               </Card>
             </>
           )}
@@ -500,10 +481,8 @@ export default function EmotionDetectorPage({ practiceMode = false }) {
       </div>
 
       <style>{`
-        @media (max-width: 980px) {
-          .page-shell > div:nth-of-type(3) {
-            grid-template-columns: 1fr;
-          }
+        @media (max-width: 760px) {
+          .page-shell > div:nth-of-type(3) { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </div>

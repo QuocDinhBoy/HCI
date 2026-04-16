@@ -1,179 +1,328 @@
+/* ─── LandingPage ────────────────────────────────────────────
+   Trang chủ — trước khi đăng nhập
+   Thiết kế: hero landing với nền pastel, floating emojis, feature cards
+───────────────────────────────────────────────────────────── */
 import { Link } from 'react-router-dom';
-import Button from '../components/ui/Button';
-import { useAuthStore } from '../store/useAuthStore';
+import Card from '../components/ui/Card';
 
-const highlights = [
+const FEATURES = [
   {
-    title: 'Realtime emotion detector',
-    body: 'Nhan dien cam xuc truc tiep tu camera ngay tren trinh duyet, khong can cai dat phuc tap.',
-    icon: '📷',
+    icon:    '🃏',
+    title:   'Thẻ học cảm xúc',
+    desc:    'Nhận diện cảm xúc qua hình ảnh khuôn mặt với giao diện trực quan, lớn và rõ ràng.',
+    variant: 'sky',
   },
   {
-    title: 'Learning map theo cap do',
-    body: 'Lo trinh gom flashcard, matching, ngu canh va bieu cam AI, mo khoa theo tien do cua be.',
-    icon: '🗺️',
+    icon:    '🧩',
+    title:   'Ghép cặp vui học',
+    desc:    'Trò chơi ghép thẻ cảm xúc giúp bé ghi nhớ và phân biệt cảm xúc một cách tự nhiên.',
+    variant: 'mint',
   },
   {
-    title: 'Bao cao va canh bao som',
-    body: 'Tong hop sao, streak, khuyen nghi va danh dau bieu hien can theo doi cho phu huynh.',
-    icon: '📊',
+    icon:    '📖',
+    title:   'Học qua tình huống',
+    desc:    'Hiểu cảm xúc qua các câu chuyện ngắn và tình huống gần gũi trong cuộc sống hàng ngày.',
+    variant: 'lavender',
+  },
+  {
+    icon:    '🎭',
+    title:   'Luyện biểu cảm AI',
+    desc:    'Camera và trí tuệ nhân tạo Gemini hướng dẫn bé luyện tập biểu cảm theo thời gian thực.',
+    variant: 'peach',
+  },
+  {
+    icon:    '📊',
+    title:   'Báo cáo chi tiết',
+    desc:    'Phụ huynh và giáo viên theo dõi tiến trình, cảm xúc và cảnh báo qua biểu đồ dễ hiểu.',
+    variant: 'sun',
+  },
+  {
+    icon:    '🔊',
+    title:   'Đọc to (TTS)',
+    desc:    'Hỗ trợ text-to-speech giúp bé nghe và hiểu nội dung bài học mà không cần đọc chữ.',
+    variant: 'coral',
   },
 ];
 
-const steps = [
-  {
-    title: 'Tao tai khoan',
-    body: 'Phu huynh dang ky nhanh voi email de bat dau hanh trinh.',
-  },
-  {
-    title: 'Hoc va luyen hang ngay',
-    body: 'Be hoc bai tu co ban den nang cao, ket hop camera va game tuong tac.',
-  },
-  {
-    title: 'Theo doi va dieu chinh',
-    body: 'Xem bao cao, nhan de xuat thong minh de tang hieu qua hoc tap.',
-  },
+const HOW_STEPS = [
+  { num: '1', icon: '👤', title: 'Tạo hồ sơ bé',     desc: 'Phụ huynh tạo tài khoản và thiết lập thông tin của bé trong 1 phút.' },
+  { num: '2', icon: '📚', title: 'Bắt đầu học',       desc: 'Bé chọn bài học từ lộ trình cấp độ phù hợp — từ dễ đến khó.' },
+  { num: '3', icon: '🎯', title: 'Luyện tập mỗi ngày', desc: 'Học 10–15 phút mỗi ngày giúp bé tiến bộ vượt bậc về nhận thức cảm xúc.' },
+  { num: '4', icon: '📈', title: 'Theo dõi tiến trình', desc: 'Xem báo cáo chi tiết và nhận gợi ý học tập được cá nhân hóa.' },
+];
+
+const EMOTIONS = [
+  { emoji: '😊', label: 'Vui vẻ' },
+  { emoji: '😢', label: 'Buồn bã' },
+  { emoji: '😠', label: 'Tức giận' },
+  { emoji: '😨', label: 'Sợ hãi' },
+  { emoji: '😲', label: 'Ngạc nhiên' },
+  { emoji: '🤢', label: 'Khó chịu' },
 ];
 
 export default function LandingPage() {
-  const token = useAuthStore((state) => state.token);
-  const primaryRoute = token ? '/app' : '/register';
-  const primaryLabel = token ? 'Vao trung tam hoc' : 'Bat dau mien phi';
-
   return (
     <div className="landing-page">
-      <header className="page-shell landing-nav animate-rise">
-        <div className="landing-brand">
-          <span className="landing-brand-dot" />
-          <strong>EmpathyKids</strong>
-        </div>
 
-        <nav className="landing-nav-links">
-          <a href="#features">Tinh nang</a>
-          <a href="#flow">Quy trinh</a>
-          <a href="#cta">Bat dau</a>
-        </nav>
+      {/* ── Nav ─────────────────────────────────────────────── */}
+      <header style={{
+        position:        'sticky',
+        top:             0,
+        zIndex:          100,
+        background:      'rgba(240,248,255,0.88)',
+        backdropFilter:  'blur(20px)',
+        borderBottom:    '1px solid rgba(126,197,248,0.20)',
+        boxShadow:       '0 2px 12px rgba(100,149,237,0.08)',
+      }}>
+        <div style={{
+          width:           'min(1200px,94vw)',
+          margin:          '0 auto',
+          display:         'flex',
+          alignItems:      'center',
+          justifyContent:  'space-between',
+          gap:             16,
+          padding:         '14px 0',
+        }}>
+          {/* Brand */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{
+              width:        44, height: 44, borderRadius: 14,
+              background:   'linear-gradient(135deg, var(--sky-300), var(--lavender-300))',
+              display:      'grid', placeItems: 'center', fontSize: '1.3rem',
+              boxShadow:    'var(--shadow-sm)', flexShrink: 0,
+            }}>🧠</div>
+            <div>
+              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.3rem', color: 'var(--ink-900)', lineHeight: 1 }}>
+                EmpathyKids
+              </div>
+              <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--ink-400)', letterSpacing: 0.5, marginTop: 1 }}>
+                Học cảm xúc cùng AI
+              </div>
+            </div>
+          </div>
 
-        <div className="landing-nav-actions">
-          <Link to="/login">
-            <Button variant="ghost">Dang nhap</Button>
-          </Link>
-          <Link to={primaryRoute}>
-            <Button variant="warm">{primaryLabel}</Button>
-          </Link>
+          {/* Nav actions */}
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <Link to="/login" className="btn btn-ghost btn-sm">Đăng nhập</Link>
+            <Link to="/register" className="btn btn-primary btn-sm" id="landing-register-btn">Bắt đầu miễn phí 🚀</Link>
+          </div>
         </div>
       </header>
 
-      <main className="page-shell landing-main">
-        <section className="surface-card landing-hero animate-rise">
-          <div>
-            <p className="pill" style={{ background: '#e6f8f5', color: '#0f8f8f' }}>
-              Nen tang ho tro hoc cam xuc
-            </p>
-            <h1>
-              Hoc cam xuc bang trai nghiem
-              <br />
-              vui, de hieu, va do duoc
-            </h1>
-            <p className="landing-hero-copy">
-              EmpathyKids giup tre luyen nhan dien cam xuc qua camera realtime, bai hoc tuong tac, va bao cao tien do cho phu huynh.
-            </p>
+      {/* ── Hero ─────────────────────────────────────────────── */}
+      <section style={{
+        position:    'relative',
+        overflow:    'hidden',
+        padding:     'clamp(40px,6vw,80px) 0',
+        background:  'linear-gradient(180deg, var(--sky-50) 0%, rgba(240,248,255,0) 100%)',
+      }}>
+        {/* Floating decorations */}
+        {EMOTIONS.map((em, i) => (
+          <span
+            key={em.label}
+            className="float-emoji"
+            style={{
+              fontSize:         `${1.8 + (i % 3) * 0.8}rem`,
+              opacity:          0.55,
+              top:              `${8 + (i * 14) % 65}%`,
+              left:             i < 3 ? `${2 + i * 4}%` : 'auto',
+              right:            i >= 3 ? `${2 + (i - 3) * 4}%` : 'auto',
+              animationDelay:   `${i * 0.6}s`,
+              animationDuration:`${3 + (i % 2)}s`,
+            }}
+          >
+            {em.emoji}
+          </span>
+        ))}
 
-            <div className="landing-hero-actions">
-              <Link to={primaryRoute}>
-                <Button variant="warm">{primaryLabel}</Button>
-              </Link>
-              <Link to="/login">
-                <Button variant="ghost">Toi da co tai khoan</Button>
-              </Link>
-            </div>
+        <div style={{ width: 'min(1200px,94vw)', margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
+          <span className="pill pill-sky" style={{ fontSize: '1rem', padding: '8px 20px', marginBottom: 20, display: 'inline-flex' }}>
+            ✨ Ứng dụng hỗ trợ trẻ tự kỷ
+          </span>
 
-            <div className="landing-stat-row">
-              <article className="landing-stat-chip">
-                <strong>4 modules</strong>
-                <span>Flashcard - Matching - Context - AI</span>
-              </article>
-              <article className="landing-stat-chip">
-                <strong>Realtime</strong>
-                <span>Face emotion detector ngay tren web</span>
-              </article>
-              <article className="landing-stat-chip">
-                <strong>Parent report</strong>
-                <span>Theo doi sao, streak, canh bao</span>
-              </article>
-            </div>
-          </div>
+          <h1 style={{
+            fontSize:     'clamp(2.4rem, 5vw, 4.2rem)',
+            fontFamily:   'var(--font-heading)',
+            fontWeight:   800,
+            color:        'var(--ink-900)',
+            lineHeight:   1.1,
+            marginTop:    12,
+          }}>
+            Giúp bé học{' '}
+            <span style={{ color: 'var(--sky-400)' }}>cảm xúc</span>
+            <br />
+            theo cách{' '}
+            <span style={{ color: 'var(--mint-400)' }}>vui & dễ hiểu</span> 🌈
+          </h1>
 
-          <div className="landing-hero-card animate-float">
-            <div className="landing-hero-smile">:)</div>
-            <div className="landing-hero-card-grid">
-              <article>
-                <h3>Emotion AI</h3>
-                <p>Quan sat bieu cam va dua ra phan hoi ngay lap tuc.</p>
-              </article>
-              <article>
-                <h3>Roadmap</h3>
-                <p>Mo khoa bai hoc theo muc do tien bo cua be.</p>
-              </article>
-            </div>
-          </div>
-        </section>
+          <p style={{
+            color:      'var(--ink-500)',
+            marginTop:  18,
+            fontSize:   'clamp(1rem,1.8vw,1.25rem)',
+            maxWidth:   600,
+            margin:     '18px auto 0',
+            lineHeight: 1.7,
+          }}>
+            EmpathyKids là ứng dụng thiết kế đặc biệt cho trẻ tự kỷ, giúp bé nhận diện,
+            hiểu và biểu đạt cảm xúc thông qua học tập tương tác và trí tuệ nhân tạo.
+          </p>
 
-        <section id="features" className="landing-section">
-          <div className="landing-section-head">
-            <p className="pill" style={{ background: '#e9f0ff', color: '#345ea8' }}>
-              Tinh nang cot loi
-            </p>
-            <h2>San sang cho van hanh that te</h2>
-          </div>
-
-          <div className="landing-feature-grid">
-            {highlights.map((item) => (
-              <article key={item.title} className="surface-card landing-feature-card">
-                <div className="landing-feature-icon">{item.icon}</div>
-                <h3>{item.title}</h3>
-                <p>{item.body}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section id="flow" className="landing-section">
-          <div className="landing-section-head">
-            <p className="pill" style={{ background: '#fff1e8', color: '#a1542a' }}>
-              Quy trinh 3 buoc
-            </p>
-            <h2>Khoi dong nhanh, hoc tap lien tuc</h2>
-          </div>
-
-          <div className="landing-step-grid">
-            {steps.map((step, index) => (
-              <article key={step.title} className="surface-card landing-step-card">
-                <span className="landing-step-number">0{index + 1}</span>
-                <h3>{step.title}</h3>
-                <p>{step.body}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section id="cta" className="surface-card landing-cta">
-          <div>
-            <h2>San sang dua EmpathyKids vao su dung?</h2>
-            <p>
-              Tao tai khoan trong vai giay va bat dau lo trinh hoc cam xuc duoc ca nhan hoa cho be ngay hom nay.
-            </p>
-          </div>
-          <div className="landing-cta-actions">
-            <Link to={primaryRoute}>
-              <Button variant="warm">{primaryLabel}</Button>
+          <div style={{ marginTop: 32, display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link to="/register" className="btn btn-primary btn-xl" id="hero-get-started-btn">
+              🚀 Bắt đầu học ngay
             </Link>
-            <Link to="/login">
-              <Button variant="ghost">Dang nhap he thong</Button>
+            <Link to="/login" className="btn btn-ghost btn-xl">
+              👤 Đăng nhập
             </Link>
           </div>
-        </section>
-      </main>
+
+          {/* Emotion preview strip */}
+          <div style={{
+            marginTop:     48,
+            display:       'flex',
+            justifyContent:'center',
+            gap:           12,
+            flexWrap:      'wrap',
+          }}>
+            {EMOTIONS.map((em) => (
+              <div
+                key={em.label}
+                style={{
+                  display:      'flex',
+                  flexDirection:'column',
+                  alignItems:   'center',
+                  gap:          6,
+                  padding:      '14px 16px',
+                  borderRadius: 'var(--radius-lg)',
+                  background:   'white',
+                  border:       '1.5px solid rgba(126,197,248,0.22)',
+                  boxShadow:    'var(--shadow-sm)',
+                  transition:   'transform 0.2s ease',
+                  cursor:       'default',
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
+                onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+              >
+                <span style={{ fontSize: '2.4rem' }}>{em.emoji}</span>
+                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--ink-600)' }}>{em.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Features ─────────────────────────────────────────── */}
+      <section style={{ padding: 'clamp(40px,5vw,70px) 0', background: 'white' }}>
+        <div style={{ width: 'min(1200px,94vw)', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 40 }}>
+            <span className="pill pill-mint" style={{ marginBottom: 12, fontSize: '1rem', padding: '8px 20px', display: 'inline-flex' }}>
+              Tính năng nổi bật
+            </span>
+            <h2 style={{ fontSize: 'clamp(1.8rem,3.5vw,2.8rem)' }}>
+              Tất cả những gì bé cần để học cảm xúc 💡
+            </h2>
+            <p style={{ color: 'var(--ink-500)', marginTop: 10, fontSize: '1.05rem', maxWidth: 560, margin: '10px auto 0' }}>
+              Thiết kế đặc biệt theo nguyên tắc ASD — tối giản, nhất quán, phản hồi tích cực.
+            </p>
+          </div>
+
+          <div className="grid-auto stagger-children" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))' }}>
+            {FEATURES.map((feat) => (
+              <Card key={feat.title} variant={feat.variant} style={{ padding: 26 }} className="hover-lift">
+                <div style={{ fontSize: '2.8rem', lineHeight: 1, marginBottom: 14 }}>{feat.icon}</div>
+                <h3 style={{ fontSize: '1.2rem', color: 'var(--ink-800)' }}>{feat.title}</h3>
+                <p style={{ color: 'var(--ink-500)', marginTop: 8, fontSize: '0.95rem', lineHeight: 1.6 }}>{feat.desc}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── How it works ─────────────────────────────────────── */}
+      <section style={{ padding: 'clamp(40px,5vw,70px) 0', background: 'linear-gradient(180deg, var(--mint-50), var(--sky-50))' }}>
+        <div style={{ width: 'min(1200px,94vw)', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 40 }}>
+            <span className="pill pill-sky" style={{ marginBottom: 12, fontSize: '1rem', padding: '8px 20px', display: 'inline-flex' }}>
+              Cách hoạt động
+            </span>
+            <h2 style={{ fontSize: 'clamp(1.8rem,3.5vw,2.8rem)' }}>Bắt đầu chỉ trong 4 bước 🚀</h2>
+          </div>
+
+          <div className="grid-auto stagger-children" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+            {HOW_STEPS.map((step) => (
+              <Card key={step.num} style={{ padding: 26 }} className="hover-lift">
+                <div style={{
+                  width:       48, height: 48, borderRadius: '50%',
+                  background:  'linear-gradient(135deg, var(--sky-300), var(--lavender-300))',
+                  display:     'grid', placeItems: 'center',
+                  fontSize:    '1.1rem', fontWeight: 900,
+                  color:       'white', marginBottom: 14,
+                  fontFamily:  'var(--font-heading)',
+                  boxShadow:   'var(--shadow-sm)',
+                }}>
+                  {step.num}
+                </div>
+                <div style={{ fontSize: '2rem', marginBottom: 10 }}>{step.icon}</div>
+                <h3 style={{ fontSize: '1.15rem', color: 'var(--ink-800)' }}>{step.title}</h3>
+                <p style={{ color: 'var(--ink-500)', marginTop: 8, fontSize: '0.95rem', lineHeight: 1.6 }}>{step.desc}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA ──────────────────────────────────────────────── */}
+      <section style={{ padding: 'clamp(40px,5vw,70px) 0' }}>
+        <div style={{ width: 'min(1200px,94vw)', margin: '0 auto' }}>
+          <Card style={{
+            padding:    'clamp(32px,5vw,56px)',
+            textAlign:  'center',
+            background: 'linear-gradient(135deg, var(--sky-100) 0%, var(--lavender-100) 50%, var(--mint-100) 100%)',
+            border:     '2px solid rgba(126,197,248,0.25)',
+            position:   'relative',
+            overflow:   'hidden',
+          }}>
+            <span className="float-emoji" style={{ top: 20, left: 30, fontSize: '2rem', animationDelay: '0s' }}>🌟</span>
+            <span className="float-emoji" style={{ top: 20, right: 30, fontSize: '1.8rem', animationDelay: '1s' }}>💫</span>
+            <span className="float-emoji" style={{ bottom: 20, left: '40%', fontSize: '2.5rem', animationDelay: '2s' }}>🎉</span>
+
+            <h2 style={{ fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', position: 'relative', zIndex: 1 }}>
+              Sẵn sàng bắt đầu hành trình cùng bé? 🌈
+            </h2>
+            <p style={{ color: 'var(--ink-500)', marginTop: 12, fontSize: '1.05rem', maxWidth: 520, margin: '12px auto 0', position: 'relative', zIndex: 1 }}>
+              Tham gia EmpathyKids ngay hôm nay — hoàn toàn miễn phí. Giúp bé phát triển trí tuệ cảm xúc mỗi ngày.
+            </p>
+
+            <div style={{ marginTop: 28, display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', position: 'relative', zIndex: 1 }}>
+              <Link to="/register" className="btn btn-primary btn-xl" id="cta-register-btn">
+                🚀 Tạo tài khoản miễn phí
+              </Link>
+              <Link to="/login" className="btn btn-ghost btn-xl">
+                Đăng nhập
+              </Link>
+            </div>
+          </Card>
+        </div>
+      </section>
+
+      {/* ── Footer ────────────────────────────────────────────── */}
+      <footer style={{
+        padding:     'clamp(20px,3vw,32px) 0',
+        borderTop:   '1px solid rgba(126,197,248,0.18)',
+        background:  'white',
+        textAlign:   'center',
+        color:       'var(--ink-400)',
+        fontSize:    '0.9rem',
+      }}>
+        <div style={{ width: 'min(1200px,94vw)', margin: '0 auto' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 8 }}>
+            <div style={{ width: 28, height: 28, borderRadius: 8, background: 'linear-gradient(135deg, var(--sky-300), var(--lavender-300))', display: 'grid', placeItems: 'center', fontSize: '0.85rem' }}>🧠</div>
+            <span style={{ fontWeight: 800, color: 'var(--ink-700)' }}>EmpathyKids</span>
+          </div>
+          <p>© {new Date().getFullYear()} EmpathyKids — Học cảm xúc cùng AI 🌈</p>
+          <p style={{ marginTop: 4 }}>Thiết kế đặc biệt cho trẻ tự kỷ (ASD)</p>
+        </div>
+      </footer>
     </div>
   );
 }
