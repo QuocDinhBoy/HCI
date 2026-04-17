@@ -1,4 +1,5 @@
 import db from '../config/db.js';
+import { checkAndGrantBadges } from './badgeController.js';
 
 async function checkLessonCompletion(conn, userId, lessonTypeId, emotionGroupId) {
     const [rows] = await conn.query(
@@ -81,7 +82,11 @@ export const logActivity = async (req, res) => {
         await conn.query(updateStatQuery, [userId, lessonTypeId, levelId, isCorrect ? 1 : 0]);
 
         await conn.commit();
-        res.status(200).json({ message: "Lưu kết quả thành công", score: score });
+
+        // Kiểm tra và trao huy hiệu mới (non-blocking, sau commit)
+        const newBadges = await checkAndGrantBadges(userId).catch(() => []);
+
+        res.status(200).json({ message: "Lưu kết quả thành công", score, newBadges });
 
     } catch (error) {
         await conn.rollback();

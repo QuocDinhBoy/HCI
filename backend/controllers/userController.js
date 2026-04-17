@@ -8,11 +8,21 @@ export const getUserProfile = async (req, res) => {
         const [
             [userRows],
             [scoreRow],
-            [dateRows]
+            [dateRows],
+            [recentBadgeRows]
         ] = await Promise.all([
             db.query(`SELECT username, email, parent_name, avatar FROM user WHERE id = ?`, [userId]),
             db.query(`SELECT SUM(score) as total_score FROM user_activity_log WHERE user_id = ?`, [userId]),
-            db.query(`SELECT DISTINCT DATE(answered_at) as play_date FROM user_activity_log WHERE user_id = ? ORDER BY play_date DESC`, [userId])
+            db.query(`SELECT DISTINCT DATE(answered_at) as play_date FROM user_activity_log WHERE user_id = ? ORDER BY play_date DESC`, [userId]),
+            db.query(
+                `SELECT bd.id, bd.code, bd.name, bd.icon_emoji AS icon, bd.category, ub.earned_at
+                 FROM user_badges ub
+                 JOIN badge_definition bd ON bd.id = ub.badge_id
+                 WHERE ub.user_id = ?
+                 ORDER BY ub.earned_at DESC
+                 LIMIT 3`,
+                [userId]
+            )
         ]);
 
         if (userRows.length === 0) {
@@ -53,13 +63,21 @@ export const getUserProfile = async (req, res) => {
         // 4. Trả về kết quả
         res.status(200).json({
             userInfo: {
-                childName: user.username,   // Map username -> childName
+                childName: user.username,
                 parentName: user.parent_name,
                 email: user.email,
                 avatar: user.avatar
             },
             stars: totalStars,
-            currentStreak: streak
+            currentStreak: streak,
+            recentBadges: recentBadgeRows.map((b) => ({
+                id:       b.id,
+                code:     b.code,
+                name:     b.name,
+                icon:     b.icon,
+                category: b.category,
+                earnedAt: b.earned_at,
+            })),
         });
 
     } catch (error) {

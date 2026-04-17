@@ -16,6 +16,8 @@ import emotionSessionRoutes from './routers/emotionSession.js';
 import alertRoutes from './routers/alert.js';
 import recommendationRoutes from './routers/recommendation.js';
 import ttsRoutes from './routers/tts.js';
+import badgeRoutes from './routers/badge.js';
+import storyRoutes from './routers/story.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 
 dotenv.config();
@@ -55,6 +57,8 @@ app.use('/api/emotion-sessions', emotionSessionRoutes);
 app.use('/api/alerts', alertRoutes);
 app.use('/api/recommendations', recommendationRoutes);
 app.use('/api/tts', ttsRoutes);
+app.use('/api/badges', badgeRoutes);
+app.use('/api/stories', storyRoutes);
 
 app.get('/', (req, res) => {
     res.json({

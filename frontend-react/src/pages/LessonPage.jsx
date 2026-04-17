@@ -75,6 +75,7 @@ export default function LessonPage() {
   const [showFeedback,    setShowFeedback]    = useState(false);
   const [completed,       setCompleted]       = useState(false);
   const [score,           setScore]           = useState(0);
+  const [newBadges,       setNewBadges]       = useState([]);
 
   // Matching state
   const [flipped,               setFlipped]               = useState([]);
@@ -155,9 +156,17 @@ export default function LessonPage() {
   /* ── Helpers ────────────────────────────────────────────── */
   const logProgress = async ({ isCorrect, questionId = 0, chosenEmotionId = null, duration = 0, totalAttempts = 0, correctCount = 0 }) => {
     try {
-      await client.post('/api/progress-map/log', {
+      const { data } = await client.post('/api/progress-map/log', {
         lessonType, levelId: Number(levelId), isCorrect, questionId, chosenEmotionId, duration, totalAttempts, correctCount,
       });
+      // Thu thập badge mới nếu có
+      if (data?.newBadges?.length > 0) {
+        setNewBadges((prev) => {
+          const existingIds = new Set(prev.map((b) => b.id));
+          const fresh = data.newBadges.filter((b) => !existingIds.has(b.id));
+          return fresh.length > 0 ? [...prev, ...fresh] : prev;
+        });
+      }
     } catch { /* non-blocking */ }
   };
 
@@ -197,6 +206,7 @@ export default function LessonPage() {
       matchingTimeoutRef.current = null;
       setChallengeActive(false); resetChallengeState();
       stopDetection(); stopCamera(); stopTts();
+      setNewBadges([]);
 
       try {
         const pathFactory = endpointMap[lessonType];
@@ -804,38 +814,119 @@ export default function LessonPage() {
 
       {/* ── Completion screen ─────────────────────────────────── */}
       {completed && (
-        <Card style={{
-          textAlign:  'center',
-          padding:    40,
-          background: 'linear-gradient(135deg, var(--sun-50), white)',
-          border:     '2px solid rgba(255,217,77,0.30)',
-          maxWidth:   500,
-          margin:     '0 auto',
-        }}>
-          <div style={{ fontSize: '5rem', animation: 'bounce-soft 0.8s ease infinite alternate' }}>🏆</div>
-          <h2 style={{ fontSize: 'clamp(1.8rem,3vw,2.5rem)', marginTop: 16, color: 'var(--ink-800)' }}>
-            Hoàn thành rồi!
-          </h2>
-          <p style={{ color: 'var(--ink-500)', marginTop: 8, fontSize: '1.1rem' }}>
-            Con đã làm rất tốt! Điểm của con: <strong style={{ color: 'var(--sky-500)' }}>{score}</strong>
-          </p>
+        <div style={{ display: 'grid', gap: 16, maxWidth: 540, margin: '0 auto', width: '100%' }}>
 
-          {/* Stars */}
-          <div style={{ marginTop: 16, fontSize: '3rem', display: 'flex', justifyContent: 'center', gap: 8 }}>
-            {[0, 1, 2].map((i) => (
-              <span key={i} style={{ opacity: i < starCount ? 1 : 0.2, transition: `opacity 0.3s ${i * 0.15}s` }}>⭐</span>
-            ))}
-          </div>
+          {/* Main card */}
+          <Card style={{
+            textAlign:  'center',
+            padding:    40,
+            background: 'linear-gradient(135deg, var(--sun-50), white)',
+            border:     '2px solid rgba(255,217,77,0.30)',
+          }}>
+            <div style={{ fontSize: '5rem', animation: 'bounce-soft 0.8s ease infinite alternate' }}>🏆</div>
+            <h2 style={{ fontSize: 'clamp(1.8rem,3vw,2.5rem)', marginTop: 16, color: 'var(--ink-800)' }}>
+              Hoàn thành rồi!
+            </h2>
+            <p style={{ color: 'var(--ink-500)', marginTop: 8, fontSize: '1.1rem' }}>
+              Con đã làm rất tốt! Điểm số: <strong style={{ color: 'var(--sky-500)' }}>{score}</strong>
+            </p>
 
-          <div style={{ marginTop: 24, display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
-            <Button variant="primary" size="lg" onClick={() => navigate('/app')}>
-              🗺️ Về lộ trình
-            </Button>
-            <Button variant="ghost" size="lg" onClick={() => window.location.reload()}>
-              🔄 Học lại
-            </Button>
-          </div>
-        </Card>
+            {/* Stars animated */}
+            <div style={{ marginTop: 16, fontSize: '3rem', display: 'flex', justifyContent: 'center', gap: 10 }}>
+              {[0, 1, 2].map((i) => (
+                <span
+                  key={i}
+                  style={{
+                    opacity:    i < starCount ? 1 : 0.2,
+                    transform:  i < starCount ? 'scale(1.25)' : 'scale(1)',
+                    filter:     i < starCount ? 'drop-shadow(0 0 10px rgba(255,200,0,0.7))' : 'none',
+                    transition: `opacity 0.4s ${i * 0.2}s, transform 0.4s ${i * 0.2}s`,
+                    display:    'inline-block',
+                  }}
+                >⭐</span>
+              ))}
+            </div>
+
+            {/* Stars earned badge */}
+            <div style={{
+              marginTop:    14,
+              display:      'inline-flex',
+              alignItems:   'center',
+              gap:          8,
+              padding:      '8px 20px',
+              borderRadius: 'var(--radius-full)',
+              background:   'linear-gradient(135deg,#fff8d6,#fff0e8)',
+              border:       '1.5px solid rgba(255,200,0,0.25)',
+            }}>
+              <span style={{ fontSize: '1.4rem' }}>⭐</span>
+              <span style={{ fontWeight: 900, color: 'var(--sun-600)', fontSize: '1.05rem' }}>
+                +{score} sao cảm xúc!
+              </span>
+            </div>
+
+            <div style={{ marginTop: 24, display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
+              <Button variant="primary" size="lg" onClick={() => navigate('/app')}>
+                🗺️ Về lộ trình
+              </Button>
+              <Button variant="ghost" size="lg" onClick={() => window.location.reload()}>
+                🔄 Học lại
+              </Button>
+            </div>
+          </Card>
+
+          {/* New badges unlocked */}
+          {newBadges.length > 0 && (
+            <Card style={{
+              padding:    28,
+              background: 'linear-gradient(135deg, var(--lavender-50), white)',
+              border:     '2px solid rgba(180,163,245,0.40)',
+              textAlign:  'center',
+            }}>
+              <div style={{
+                fontSize:  '2.5rem',
+                marginBottom: 8,
+                animation: 'bounce-soft 1s ease infinite alternate',
+              }}>🎖️</div>
+              <h3 style={{ fontSize: '1.4rem', color: 'var(--lavender-600)', marginBottom: 16 }}>
+                Huy hiệu mới mở khóa! 🎉
+              </h3>
+              <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+                {newBadges.map((badge, idx) => (
+                  <div
+                    key={badge.id ?? idx}
+                    className="animate-rise"
+                    style={{
+                      padding:      '16px 20px',
+                      borderRadius: 'var(--radius-xl)',
+                      background:   'white',
+                      border:       '2px solid rgba(180,163,245,0.40)',
+                      boxShadow:    '0 8px 24px rgba(180,163,245,0.20)',
+                      minWidth:     130,
+                      animationDelay: `${idx * 0.1}s`,
+                    }}
+                  >
+                    <div style={{ fontSize: '2.8rem', lineHeight: 1, marginBottom: 8 }}>
+                      {badge.icon_emoji || badge.icon || '🏅'}
+                    </div>
+                    <div style={{ fontWeight: 800, fontSize: '0.9rem', color: 'var(--lavender-600)' }}>
+                      {badge.name}
+                    </div>
+                    {badge.description && (
+                      <div style={{ fontSize: '0.76rem', color: 'var(--ink-400)', marginTop: 4, lineHeight: 1.4 }}>
+                        {badge.description}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop: 16 }}>
+                <Button variant="ghost" size="sm" onClick={() => navigate('/badges')}>
+                  Xem bộ sưu tập →
+                </Button>
+              </div>
+            </Card>
+          )}
+        </div>
       )}
     </div>
   );

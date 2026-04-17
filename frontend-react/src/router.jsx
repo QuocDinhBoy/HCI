@@ -12,6 +12,10 @@ const LessonPage = lazy(() => import('./pages/LessonPage'));
 const EmotionDetectorPage = lazy(() => import('./pages/EmotionDetectorPage'));
 const ReportPage = lazy(() => import('./pages/ReportPage'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const BadgeCollectionPage = lazy(() => import('./pages/BadgeCollectionPage'));
+const StoryLibraryPage    = lazy(() => import('./pages/StoryLibraryPage'));
+const StoryReaderPage     = lazy(() => import('./pages/StoryReaderPage'));
+const LearningMapPage     = lazy(() => import('./pages/LearningMapPage'));
 
 function RouteFallback() {
   return (
@@ -53,6 +57,10 @@ export const router = createBrowserRouter([
       { path: '/speed-run', element: withSuspense(<EmotionDetectorPage practiceMode />) },
       { path: '/report', element: withSuspense(<ReportPage />) },
       { path: '/profile', element: withSuspense(<ProfilePage />) },
+      { path: '/badges',            element: withSuspense(<BadgeCollectionPage />) },
+      { path: '/stories',           element: withSuspense(<StoryLibraryPage />) },
+      { path: '/stories/:storyId',  element: withSuspense(<StoryReaderPage />) },
+      { path: '/map',               element: withSuspense(<LearningMapPage />) },
     ],
   },
   {
